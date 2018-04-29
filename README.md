@@ -1,4 +1,4 @@
-# ![voBits logo](https://github.com/voBits/vobits.github.io/blob/master/images/favicon.png) voBits Backend
+# ![voBits logo](https://github.com/voBits/vobits.github.io/blob/master/images/favicon.png) Backend
 
 [![Build Status](https://travis-ci.org/forkdelta/backend-replacement.svg?branch=master)](https://travis-ci.org/forkdelta/backend-replacement)
 [![Known Vulnerabilities](https://snyk.io/test/github/forkdelta/backend-replacement/badge.svg)](https://snyk.io/test/github/forkdelta/backend-replacement)
