@@ -1,8 +1,8 @@
 # ![voBits logo](https://github.com/voBits/vobits.github.io/blob/master/images/favicon.png) Backend
 
-[![Build Status](https://travis-ci.org/forkdelta/backend-replacement.svg?branch=master)](https://travis-ci.org/forkdelta/backend-replacement)
-[![Known Vulnerabilities](https://snyk.io/test/github/forkdelta/backend-replacement/badge.svg)](https://snyk.io/test/github/forkdelta/backend-replacement)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/forkdelta/tokenbase/issues)
+[![Build Status](https://travis-ci.org/voBits/backend-replacement.svg?branch=master)](https://travis-ci.org/voBits/backend-replacement)
+[![Known Vulnerabilities](https://snyk.io/test/github/vobits/backend-replacement/badge.svg)](https://snyk.io/test/github/voBits/backend-replacement)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/voBits/tokenbase/issues)
 
 
 This repository hosts the source code of ForkDelta backend. The backend provides off-chain orderbook functionality and an API to get a filtered view of Ethereum blockchain events on an [EtherDelta-like contract](https://www.reddit.com/r/EtherDelta/comments/6kdiyl/smart_contract_overview/).
