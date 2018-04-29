@@ -56,6 +56,13 @@ def is_origin_allowed(origin):
 
 sid_environ = {}
 
+current_block = None
+def get_current_block(ignore_cache=False):
+    global current_block
+    if not current_block or ignore_cache:
+        current_block = App().web3.eth.blockNumber
+    return current_block
+
 @sio.on('connect')
 def connect(sid, environ):
     logger.debug("event=connect sid=%s ip=%s", sid, environ.get('HTTP_X_REAL_IP'))
@@ -196,7 +203,7 @@ async def get_orders(token_give_hexstr, token_get_hexstr, user_hexstr=None, expi
             FROM orders
             WHERE {}
             ORDER BY {}
-            LIMIT 100
+            LIMIT 300
             """.format(where, ", ".join(order_by)),
             *placeholder_args)
 
@@ -308,12 +315,16 @@ def format_order(record):
 
     return response
 
-async def get_tickers():
-    async with App().db.acquire_connection() as conn:
-        return await conn.fetch("""
-            SELECT *
-            FROM tickers
-            """)
+tickers_cache = []
+async def get_tickers(ignore_cache=False):
+    if len(tickers_cache) == 0 or ignore_cache:
+        async with App().db.acquire_connection() as conn:
+            return await conn.fetch("""
+                SELECT *
+                FROM tickers
+                """)
+    else:
+        return tickers_cache
 
 def ticker_key(ticker):
     """
@@ -347,6 +358,8 @@ async def http_return_ticker(request):
 
 @sio.on('getMarket')
 async def get_market(sid, data):
+    start_time = time()
+
     if sid not in sid_environ:
         logger.error("received getMarket from sid=%s, but it is not in environs", sid)
         # Force a disconnect
@@ -358,8 +371,6 @@ async def get_market(sid, data):
         await sio.emit('exception', {"errorCode": 400, "errorMessage": "getMarket payload must be an object"}, room=sid)
         return
 
-    logger.debug('event=getMarket sid=%s ip=%s token=%s user=%s', sid, sid_environ[sid].get('HTTP_X_REAL_IP'), data.get('token'), data.get('user'))
-    current_block = App().web3.eth.getBlock("latest")["number"]
     token = data["token"] if "token" in data and Web3.isAddress(data["token"]) else None
     user = data["user"] if "user" in data and Web3.isAddress(data["user"]) and data["user"].lower() != ED_CONTRACT_ADDR else None
 
@@ -373,12 +384,12 @@ async def get_market(sid, data):
                                         state=OrderState.OPEN.name,
                                         with_available_volume=True,
                                         sort="(amount_give / amount_get) DESC",
-                                        expires_after=current_block)
+                                        expires_after=get_current_block())
         orders_sells = await get_orders(token, ZERO_ADDR,
                                         state=OrderState.OPEN.name,
                                         with_available_volume=True,
                                         sort="(amount_get / amount_give) ASC",
-                                        expires_after=current_block)
+                                        expires_after=get_current_block())
 
         response.update({
             "trades": [format_trade(trade) for trade in trades],
@@ -395,12 +406,12 @@ async def get_market(sid, data):
                                             user_hexstr=user,
                                             state=OrderState.OPEN.name,
                                             sort="(amount_give / amount_get) DESC",
-                                            expires_after=current_block)
+                                            expires_after=get_current_block())
             my_orders_sells = await get_orders(token, ZERO_ADDR,
                                             user_hexstr=user,
                                             state=OrderState.OPEN.name,
                                             sort="(amount_get / amount_give) ASC",
-                                            expires_after=current_block)
+                                            expires_after=get_current_block())
             response.update({
                 "myTrades": [format_trade(trade) for trade in my_trades],
                 "myFunds": [format_transfer(transfer) for transfer in my_funds],
@@ -411,6 +422,21 @@ async def get_market(sid, data):
             })
 
     await sio.emit('market', response, room=sid)
+    logger.debug('event=getMarket sid=%s ip=%s token=%s user=%s current_block=%i duration=%f', sid, sid_environ[sid].get('HTTP_X_REAL_IP'), data.get('token'), data.get('user'), get_current_block(), time() - start_time)
+
+TICKER_UPDATE_INTERVAL = 60.0
+async def update_tickers_cache():
+    while True:
+        try:
+            tickers_cache = await get_tickers(ignore_cache=True)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except Exception as e:
+            logger.exception("Exception occurred in update_tickers_cache")
+        else:
+            logger.debug("tickers cache updated")
+
+        await sio.sleep(TICKER_UPDATE_INTERVAL)
 
 STREAM_UPDATES_INTERVAL = 5.0
 async def stream_updates():
@@ -491,10 +517,9 @@ async def handle_order(sid, data):
         return
 
     # Require new orders to be non-expired
-    current_block = App().web3.eth.blockNumber # TODO: Introduce a strict timeout here; on failure allow order
-    if message["expires"] <= current_block:
+    if message["expires"] <= get_current_block():
         error_msg = "Cannot post order because it has already expired"
-        details_dict = { "blockNumber": current_block, "expires": message["expires"], "date": datetime.utcnow().isoformat() }
+        details_dict = { "blockNumber": get_current_block(), "expires": message["expires"], "date": datetime.utcnow().isoformat() }
         logger.warning("Order rejected: %s: %s", error_msg, details_dict)
         await sio.emit("messageResult", [422, error_msg, details_dict], room=sid)
         return
@@ -522,7 +547,23 @@ def disconnect(sid):
     logger.debug('disconnect %s %s', sid, sid_environ[sid].get('HTTP_X_REAL_IP'))
     del sid_environ[sid]
 
+BLOCK_UPDATE_INTERVAL = 6.0
+async def update_current_block():
+    while True:
+        try:
+            get_current_block(ignore_cache=True)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except Exception as e:
+            logger.exception("Exception occurred in update_current_block")
+        else:
+            logger.debug("current_block=%i", get_current_block())
+
+        await sio.sleep(BLOCK_UPDATE_INTERVAL)
+
 app.router.add_routes(routes)
 if __name__ == "__main__":
     sio.start_background_task(stream_updates)
+    sio.start_background_task(update_current_block)
+    sio.start_background_task(update_tickers_cache)
     web.run_app(app)
