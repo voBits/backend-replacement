@@ -11,7 +11,7 @@ Best way to learn about a system is to read the source code. Start with a look a
 
 ## API
 
-For information and documentation on ForkDelta's API, look here: https://github.com/forkdelta/backend-replacement/tree/master/docs/api
+For information and documentation on ForkDelta's API, look here: https://github.com/voBits/backend-replacement/tree/master/docs/api
 
 ## Developing
 
@@ -23,7 +23,7 @@ Requirements:
 * Basic familiarity with Docker keywords: image, container (https://docs.docker.com/get-started/#docker-concepts)
 
 Setup:
-1. Clone the repo (git clone https://github.com/forkdelta/backend-replacement.git)
+1. Clone the repo (git clone https://github.com/voBits/backend-replacement.git)
 2. Navigate to the root of the working copy, where the README file is.
 3. Copy `default.env` file to `.env` in root.
 4. Uncomment the `COMPOSE_FILE=` line in `.env` to enable mounting of working copy code into the containers.
