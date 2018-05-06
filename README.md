@@ -5,13 +5,13 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/voBits/tokenbase/issues)
 
 
-This repository hosts the source code of ForkDelta backend. The backend provides off-chain orderbook functionality and an API to get a filtered view of Ethereum blockchain events on an [EtherDelta-like contract](https://www.reddit.com/r/EtherDelta/comments/6kdiyl/smart_contract_overview/).
+This repository hosts the source code of voBits backend. The backend provides off-chain orderbook functionality and an API to get a filtered view of Ethereum blockchain events on an [EtherDelta-like contract](https://www.reddit.com/r/EtherDelta/comments/6kdiyl/smart_contract_overview/).
 
 Best way to learn about a system is to read the source code. Start with a look at [docker-compose.yml](docker-compose.yml).
 
 ## API
 
-For information and documentation on ForkDelta's API, look here: https://github.com/voBits/backend-replacement/tree/master/docs/api
+For information and documentation on voBits API, look here: https://github.com/voBits/backend-replacement/tree/master/docs/api
 
 ## Developing
 
@@ -40,12 +40,13 @@ Tips:
 * You can inspect the list of currently running containers with `docker-compose ps`.
 
 ## Contributors
+* [voBits](https://github.com/voBits)
 * [Arseniy Ivanov](https://github.com/freeatnet)
 * [Jonathon Dunford](https://github.com/JonathonDunford)
 
 ## License
 
-Copyright (C) 2018, Arseniy Ivanov and ForkDelta Contributors
+Copyright (C) 2018, voBits, Arseniy Ivanov and voBits Contributors
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
