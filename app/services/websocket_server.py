@@ -33,6 +33,7 @@ def is_origin_allowed(origin):
 
     Eg.:
     is_origin_allowed("https://forkdelta.github.io") => True
+    is_origin_allowed("https://vobits.github.io") => True
     is_origin_allowed("https://forkdelta.com/") => True
     is_origin_allowed("https://api.forkdelta.com/") => True
     is_origin_allowed("http://localhost:3000/") => True
@@ -41,6 +42,8 @@ def is_origin_allowed(origin):
     is_origin_allowed("ws://localhost:3001/") => True
     is_origin_allowed("file://") => False
     is_origin_allowed("https://forkdelta.bs/") => False
+    is_origin_allowed("https://www.vobits.de/") => False
+    is_origin_allowed("https://Vobits.ch/") => False
     is_origin_allowed("https://forkscamster.github.io/") => False
     """
 
