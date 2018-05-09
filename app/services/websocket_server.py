@@ -40,6 +40,7 @@ def is_origin_allowed(origin):
     is_origin_allowed("http://localhost:8080/") => True
     is_origin_allowed("wss://api.forkdelta.com/") => True
     is_origin_allowed("ws://localhost:3001/") => True
+    is_origin_allowed("ws://localhost:3000/") => True
     is_origin_allowed("file://") => False
     is_origin_allowed("https://forkdelta.bs/") => False
     is_origin_allowed("https://www.vobits.de/") => False
