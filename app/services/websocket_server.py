@@ -44,7 +44,7 @@ def is_origin_allowed(origin):
     is_origin_allowed("file://") => False
     is_origin_allowed("https://forkdelta.bs/") => False
     is_origin_allowed("https://www.vobits.de/") => False
-    is_origin_allowed("https://Vobits.ch/") => False
+    is_origin_allowed("https://ami-solution.github.io/amisdex/#!/trade/AMIS-ETH/") => False
     is_origin_allowed("https://forkscamster.github.io/") => False
     """
 
